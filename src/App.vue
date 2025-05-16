@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useMoviesStore } from '@/stores/movies'
+import Movies from '@/components/Movies.vue';
 
 const searchStore = useMoviesStore()
 const searchMovies = ref('')
@@ -8,7 +9,7 @@ let timeoutId = null
 
 watch(searchMovies, (newValue) => {
   clearTimeout(timeoutId)
-  if (newValue > 3) {
+  if (newValue.length > 3) {
     timeoutId = setTimeout(() => {
       searchStore.fetchMovie(newValue)
     },1000)
@@ -22,10 +23,7 @@ watch(searchMovies, (newValue) => {
     <h1 class="title">My Favorite Movies</h1>
     <input v-model="searchMovies" class="input" />
     <div v-for="movie of searchStore.movies" :key="movie.id">
-      <p>{{ movie.id }}</p>
+      <Movies :movie="movie" />
     </div>
-    <pre>
-      {{ searchStore.movies }}
-    </pre>
   </div>
 </template>
