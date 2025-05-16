@@ -1,47 +1,31 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { ref, watch } from 'vue'
+import { useMoviesStore } from '@/stores/movies'
+
+const searchStore = useMoviesStore()
+const searchMovies = ref('')
+let timeoutId = null
+
+watch(searchMovies, (newValue) => {
+  clearTimeout(timeoutId)
+  if (newValue > 3) {
+    timeoutId = setTimeout(() => {
+      searchStore.fetchMovie(newValue)
+    },1000)
+  }
+})
+
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div class="wrapper">
+    <h1 class="title">My Favorite Movies</h1>
+    <input v-model="searchMovies" class="input" />
+    <div v-for="movie of searchStore.movies" :key="movie.id">
+      <p>{{ movie.id }}</p>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <pre>
+      {{ searchStore.movies }}
+    </pre>
+  </div>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
