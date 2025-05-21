@@ -4,7 +4,10 @@ const api = 'https://api.themoviedb.org/3/search/movie?api_key=edec2e4b160092b90
 
 export const useMoviesStore = defineStore('movies', {
   state: () => ({
-    movies: null
+    movies: null,
+    favorite: [],
+    isActiveFavorite: true,
+    isActiveSearch: ''
   }),
 
   actions: {
@@ -18,10 +21,38 @@ export const useMoviesStore = defineStore('movies', {
           }
         })
         const data = await response.json()
-        this.movies = data.results
+        this.movies = data.results.map(movie => ({
+          ...movie,
+          isWatch: false
+        }))
       } catch (err) {
         console.log(err)
       }
+    },
+    toggleFavoriteMovies(movie) {
+      const index = this.favorite.findIndex(f => f.id === movie.id)
+      if (index === -1) {
+        movie.isWatch = true
+        this.favorite.push(movie)
+        this.FavoriteButton()
+      } else {
+        movie.isWatch = false
+        this.favorite.splice(index, 1)
+      }
+    },
+    FavoriteButton() {
+      this.isActiveFavorite = true
+      this.isActiveSearch = false
+    },
+    SearchButton() {
+      this.isActiveSearch = true
+      this.isActiveFavorite = false
+    }
+  },
+  getters:{
+    totalCountMovies(){
+      return this.favorite.length
     }
   }
+
 });
